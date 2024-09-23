@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./test-application-backend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgresdb
+    environment:
+      POSTGRES_DB: test_db
+      POSTGRESDB_ROOT_PASSWORD: password
+      POSTGRES_URL: postgres://username:password@postgresdb:5432/test_db
+    restart: unless-stopped
+
+  postgresdb:
+    image: postgres:latest
+    restart: unless-stopped
+    # env_file: ./test-application-backend/.env
+    environment:
+      POSTGRES_USER: username
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: test_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgres
+volumes:
+  db_data:
